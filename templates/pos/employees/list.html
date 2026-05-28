@@ -1,0 +1,64 @@
+{% extends 'pos/base.html' %}
+{% block title %}Karyawan{% endblock %}
+{% block page_title %}Manajemen Karyawan{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'employee_create' %}" class="btn-new" id="btn_add_employee"><i class="fas fa-plus"></i> Tambah Karyawan</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">👔 Daftar Karyawan ({{ employees|length }})</span>
+    <form method="GET" style="display:flex;gap:10px;align-items:center;">
+      <div class="search-bar">
+        <span class="search-icon"><i class="fas fa-search"></i></span>
+        <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Cari nama karyawan...">
+      </div>
+      <select name="position" class="form-control" style="width:auto;" onchange="this.form.submit()">
+        <option value="">Semua Jabatan</option>
+        {% for val, label in positions %}
+        <option value="{{ val }}" {% if request.GET.position == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-search"></i></button>
+    </form>
+  </div>
+
+  {% if employees %}
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>#</th><th>Nama Lengkap</th><th>Username</th><th>Jabatan</th><th>Gaji</th><th>Status</th><th>Aksi</th></tr></thead>
+      <tbody>
+        {% for e in employees %}
+        <tr>
+          <td style="color:var(--text-muted);">{{ forloop.counter }}</td>
+          <td style="font-weight:600;">{{ e.full_name }}</td>
+          <td style="color:var(--text-secondary);">@{{ e.user.username }}</td>
+          <td>
+            {% if e.position == 'manager' %}<span class="badge badge-gold">👑 Manager</span>
+            {% elif e.position == 'cashier' %}<span class="badge badge-info">💳 Kasir</span>
+            {% elif e.position == 'barista' %}<span class="badge badge-coffee">☕ Barista</span>
+            {% else %}<span class="badge badge-coffee">{{ e.get_position_display }}</span>{% endif %}
+          </td>
+          <td style="color:var(--caramel);font-weight:600;">Rp {{ e.salary|floatformat:0 }}</td>
+          <td>
+            {% if e.employee_status == 'active' %}<span class="badge badge-success">Aktif</span>
+            {% elif e.employee_status == 'on_leave' %}<span class="badge badge-warning">Cuti</span>
+            {% else %}<span class="badge badge-danger">Nonaktif</span>{% endif %}
+          </td>
+          <td>
+            <div class="action-group">
+              <a href="{% url 'employee_update' e.id %}" class="btn btn-secondary btn-sm btn-icon" id="edit_emp_{{ e.id }}"><i class="fas fa-edit"></i></a>
+              <a href="{% url 'employee_delete' e.id %}" class="btn btn-danger btn-sm btn-icon" id="del_emp_{{ e.id }}"><i class="fas fa-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">👔</div><p>Belum ada karyawan terdaftar.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

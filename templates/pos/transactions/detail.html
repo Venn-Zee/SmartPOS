@@ -1,0 +1,88 @@
+{% extends 'pos/base.html' %}
+{% block title %}Detail Transaksi{% endblock %}
+{% block page_title %}Detail Transaksi TRX-{{ transaction.id|stringformat:"04d" }}{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'transaction_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
+<a href="{% url 'transaction_update' transaction.id %}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
+{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;">
+  <!-- Items -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">🧾 Item Pesanan</span>
+      {% if transaction.status == 'completed' %}<span class="badge badge-success">Selesai</span>
+      {% elif transaction.status == 'pending' %}<span class="badge badge-warning">Pending</span>
+      {% else %}<span class="badge badge-danger">Batal</span>{% endif %}
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Produk</th><th>Harga Satuan</th><th>Qty</th><th>Subtotal</th></tr></thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td style="font-weight:600;">{{ item.product.name }}</td>
+            <td>Rp {{ item.unit_price|floatformat:0 }}</td>
+            <td><span class="badge badge-coffee">{{ item.quantity }}</span></td>
+            <td style="color:var(--caramel);font-weight:600;">Rp {{ item.subtotal|floatformat:0 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr style="border-top:2px solid var(--border);">
+            <td colspan="3" style="font-weight:700;padding:14px 16px;font-size:15px;">TOTAL</td>
+            <td style="color:var(--caramel);font-weight:700;font-size:18px;">Rp {{ transaction.total_amount|floatformat:0 }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px;">📋 Info Transaksi</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:14px;">
+          <span style="color:var(--text-muted);">ID Transaksi</span>
+          <span style="font-weight:700;color:var(--caramel);">TRX-{{ transaction.id|stringformat:"04d" }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;">
+          <span style="color:var(--text-muted);">Tanggal</span>
+          <span>{{ transaction.created_at|date:"d M Y, H:i" }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;">
+          <span style="color:var(--text-muted);">Kasir</span>
+          <span>{{ transaction.cashier.get_full_name|default:transaction.cashier.username }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;">
+          <span style="color:var(--text-muted);">Metode Bayar</span>
+          <span>{{ transaction.get_payment_method_display }}</span>
+        </div>
+      </div>
+    </div>
+
+    {% if transaction.customer %}
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px;">👤 Pelanggan</div>
+      <div style="font-weight:600;font-size:15px;margin-bottom:6px;">{{ transaction.customer.name }}</div>
+      <div style="color:var(--text-muted);font-size:13px;margin-bottom:4px;">{{ transaction.customer.email }}</div>
+      <div style="color:var(--text-muted);font-size:13px;">📞 {{ transaction.customer.phone }}</div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+        <span class="badge badge-coffee">⭐ {{ transaction.customer.loyalty_points }} Poin</span>
+      </div>
+    </div>
+    {% else %}
+    <div class="card">
+      <div class="card-title">👤 Pelanggan</div>
+      <p style="color:var(--text-muted);margin-top:10px;font-size:14px;">Pelanggan Umum (Walk-in)</p>
+    </div>
+    {% endif %}
+
+    <div style="display:flex;gap:10px;">
+      <a href="{% url 'transaction_delete' transaction.id %}" class="btn btn-danger" style="flex:1;justify-content:center;"><i class="fas fa-trash"></i> Hapus</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

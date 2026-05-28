@@ -1,0 +1,31 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.LoginView.as_view(), name='home'),
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
+    path('products/', views.ProductListView.as_view(), name='product_list'),
+    path('products/add/', views.ProductCreateView.as_view(), name='product_create'),
+    path('products/<int:pk>/edit/', views.ProductUpdateView.as_view(), name='product_update'),
+    path('products/<int:pk>/delete/', views.ProductDeleteView.as_view(), name='product_delete'),
+    path('customers/', views.CustomerListView.as_view(), name='customer_list'),
+    path('customers/add/', views.CustomerCreateView.as_view(), name='customer_create'),
+    path('customers/<int:pk>/edit/', views.CustomerUpdateView.as_view(), name='customer_update'),
+    path('customers/<int:pk>/delete/', views.CustomerDeleteView.as_view(), name='customer_delete'),
+    path('transactions/', views.TransactionListView.as_view(), name='transaction_list'),
+    path('transactions/new/', views.TransactionCreateView.as_view(), name='transaction_create'),
+    path('transactions/<int:pk>/', views.TransactionDetailView.as_view(), name='transaction_detail'),
+    path('transactions/<int:pk>/edit/', views.TransactionUpdateView.as_view(), name='transaction_update'),
+    path('transactions/<int:pk>/delete/', views.TransactionDeleteView.as_view(), name='transaction_delete'),
+    path('employees/', views.EmployeeListView.as_view(), name='employee_list'),
+    path('employees/add/', views.EmployeeCreateView.as_view(), name='employee_create'),
+    path('employees/<int:pk>/edit/', views.EmployeeUpdateView.as_view(), name='employee_update'),
+    path('employees/<int:pk>/delete/', views.EmployeeDeleteView.as_view(), name='employee_delete'),
+    path('reports/sales/', views.SalesReportView.as_view(), name='report_sales'),
+    path('reports/stock/', views.StockReportView.as_view(), name='report_stock'),
+    path('reports/customers/', views.CustomerReportView.as_view(), name='report_customers'),
+    path('api/product/<int:pk>/', views.product_api, name='product_api'),
+    path('api/dashboard/chart/', views.dashboard_chart_api, name='dashboard_chart_api'),
+]

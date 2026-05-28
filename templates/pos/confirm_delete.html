@@ -1,0 +1,27 @@
+{% extends 'pos/base.html' %}
+{% block title %}Konfirmasi Hapus{% endblock %}
+{% block page_title %}Konfirmasi Hapus{% endblock %}
+
+{% block content %}
+<div class="confirm-card card">
+  <div class="confirm-icon">🗑️</div>
+  <h2 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:12px;color:var(--cream);">
+    Hapus {{ object_type }}?
+  </h2>
+  <p style="color:var(--text-secondary);margin-bottom:8px;font-size:15px;">
+    Anda akan menghapus <strong style="color:var(--cream);">{{ object_name }}</strong> secara permanen.
+  </p>
+  <p style="color:var(--red);font-size:13px;margin-bottom:32px;">
+    ⚠️ Tindakan ini tidak dapat dibatalkan.
+  </p>
+  <form method="POST" style="display:flex;gap:12px;justify-content:center;">
+    {% csrf_token %}
+    <a href="{{ cancel_url }}" class="btn btn-secondary" style="padding:11px 24px;">
+      <i class="fas fa-times"></i> Batal
+    </a>
+    <button type="submit" class="btn btn-danger" style="padding:11px 24px;" id="btn_confirm_delete">
+      <i class="fas fa-trash"></i> Ya, Hapus
+    </button>
+  </form>
+</div>
+{% endblock %}

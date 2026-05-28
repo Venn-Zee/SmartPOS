@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SmartPOS{% endblock %} — SmartPOS Cafe & Retail</title>
+  <meta name="description" content="SmartPOS Cafe & Retail Management System">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">☕</div>
+      <div>
+        <div class="brand-name">SmartPOS</div>
+        <div class="brand-sub">Cafe & Retail</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Utama</div>
+      <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-house"></i></span> Dashboard
+      </a>
+
+      {# ── Manajemen ── #}
+      <div class="nav-section-label">Manajemen</div>
+
+      {# Produk — semua bisa lihat #}
+      <a href="{% url 'product_list' %}" class="nav-item {% if 'product' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-box"></i></span> Produk
+      </a>
+
+      {# Pelanggan — kasir ke atas #}
+      {% if can_view_customers %}
+      <a href="{% url 'customer_list' %}" class="nav-item {% if 'customer' in request.resolver_match.url_name and request.resolver_match.url_name != 'report_customers' %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-users"></i></span> Pelanggan
+      </a>
+      {% endif %}
+
+      {# Transaksi — kasir, waiter, manager, supervisor #}
+      {% if can_view_transactions %}
+      <a href="{% url 'transaction_list' %}" class="nav-item {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-receipt"></i></span> Transaksi
+      </a>
+      {% endif %}
+
+      {# Karyawan — hanya manager & supervisor #}
+      {% if can_manage_employees %}
+      <a href="{% url 'employee_list' %}" class="nav-item {% if 'employee' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-id-badge"></i></span> Karyawan
+      </a>
+      {% endif %}
+
+      {# ── Laporan ── #}
+      {% if is_full_access or can_view_stock_report %}
+      <div class="nav-section-label">Laporan</div>
+
+      {% if is_full_access %}
+      <a href="{% url 'report_sales' %}" class="nav-item {% if request.resolver_match.url_name == 'report_sales' %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-chart-line"></i></span> Penjualan
+      </a>
+      {% endif %}
+
+      {% if can_view_stock_report %}
+      <a href="{% url 'report_stock' %}" class="nav-item {% if request.resolver_match.url_name == 'report_stock' %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-warehouse"></i></span> Stok
+      </a>
+      {% endif %}
+
+      {% if is_full_access %}
+      <a href="{% url 'report_customers' %}" class="nav-item {% if request.resolver_match.url_name == 'report_customers' %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-star"></i></span> Pelanggan
+      </a>
+      {% endif %}
+
+      {% endif %}{# end laporan section #}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">{{ request.user.username|slice:":1"|upper }}</div>
+        <div>
+          <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+          <div class="user-role">{{ user_position_display|default:"Kasir" }}</div>
+        </div>
+      </div>
+      <a href="{% url 'logout' %}" class="btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Keluar
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="topbar">
+      <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+      <div class="topbar-right">
+        {% block topbar_actions %}{% endblock %}
+      </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+        {{ message }}
+        <button onclick="this.parentElement.remove()" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:16px;">&times;</button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="page-body">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% load static %}
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

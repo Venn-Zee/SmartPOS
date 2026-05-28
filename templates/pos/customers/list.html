@@ -1,0 +1,55 @@
+{% extends 'pos/base.html' %}
+{% block title %}Pelanggan{% endblock %}
+{% block page_title %}Manajemen Pelanggan{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'customer_create' %}" class="btn-new" id="btn_add_customer"><i class="fas fa-plus"></i> Tambah Pelanggan</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">👥 Daftar Pelanggan ({{ customers|length }})</span>
+    <form method="GET">
+      <div class="search-bar">
+        <span class="search-icon"><i class="fas fa-search"></i></span>
+        <input type="text" name="search" value="{{ search }}" placeholder="Cari nama / email...">
+        <button type="submit" style="background:none;border:none;color:var(--caramel);cursor:pointer;"><i class="fas fa-search"></i></button>
+      </div>
+    </form>
+  </div>
+
+  {% if customers %}
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Telepon</th><th>Poin</th><th>Tier</th><th>Aksi</th></tr></thead>
+      <tbody>
+        {% for c in customers %}
+        <tr>
+          <td style="color:var(--text-muted);">{{ forloop.counter }}</td>
+          <td style="font-weight:600;">{{ c.name }}</td>
+          <td style="color:var(--text-secondary);">{{ c.email }}</td>
+          <td>{{ c.phone }}</td>
+          <td style="color:var(--caramel);font-weight:600;">{{ c.loyalty_points }}</td>
+          <td>
+            {% with tier=c.get_tier %}
+              {% if tier == 'Gold' %}<span class="badge badge-gold">⭐ Gold</span>
+              {% elif tier == 'Silver' %}<span class="badge badge-silver">🥈 Silver</span>
+              {% else %}<span class="badge badge-bronze">🥉 Bronze</span>{% endif %}
+            {% endwith %}
+          </td>
+          <td>
+            <div class="action-group">
+              <a href="{% url 'customer_update' c.id %}" class="btn btn-secondary btn-sm btn-icon" id="edit_customer_{{ c.id }}"><i class="fas fa-edit"></i></a>
+              <a href="{% url 'customer_delete' c.id %}" class="btn btn-danger btn-sm btn-icon" id="del_customer_{{ c.id }}"><i class="fas fa-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">👥</div><p>Belum ada pelanggan terdaftar.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

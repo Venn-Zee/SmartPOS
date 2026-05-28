@@ -1,0 +1,65 @@
+{% extends 'pos/base.html' %}
+{% block title %}Produk{% endblock %}
+{% block page_title %}Manajemen Produk{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'product_create' %}" class="btn-new" id="btn_add_product"><i class="fas fa-plus"></i> Tambah Produk</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">📦 Daftar Produk ({{ products|length }})</span>
+    <form method="GET" style="display:flex;gap:10px;align-items:center;">
+      <div class="search-bar">
+        <span class="search-icon"><i class="fas fa-search"></i></span>
+        <input type="text" name="search" value="{{ search }}" placeholder="Cari produk...">
+      </div>
+      <select name="category" class="form-control" style="width:auto;" onchange="this.form.submit()">
+        <option value="">Semua Kategori</option>
+        {% for val, label in categories %}
+        <option value="{{ val }}" {% if selected_category == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-search"></i></button>
+    </form>
+  </div>
+
+  {% if products %}
+  <div class="table-wrapper">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Nama Produk</th><th>Kategori</th>
+        <th>Harga</th><th>Stok</th><th>Status</th><th>Aksi</th>
+      </tr></thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td style="color:var(--text-muted);">{{ forloop.counter }}</td>
+          <td style="font-weight:600;">{{ p.name }}</td>
+          <td><span class="badge badge-coffee">{{ p.get_category_display }}</span></td>
+          <td style="color:var(--caramel);font-weight:600;">Rp {{ p.price|floatformat:0 }}</td>
+          <td>
+            {% if p.stock == 0 %}<span style="color:var(--red);">Habis</span>
+            {% elif p.stock <= 5 %}<span style="color:var(--yellow);">{{ p.stock }} ⚠️</span>
+            {% else %}<span style="color:var(--green);">{{ p.stock }}</span>{% endif %}
+          </td>
+          <td>
+            {% if p.is_available %}<span class="badge badge-success">Tersedia</span>
+            {% else %}<span class="badge badge-danger">Tidak Aktif</span>{% endif %}
+          </td>
+          <td>
+            <div class="action-group">
+              <a href="{% url 'product_update' p.id %}" class="btn btn-secondary btn-sm btn-icon" title="Edit" id="edit_product_{{ p.id }}"><i class="fas fa-edit"></i></a>
+              <a href="{% url 'product_delete' p.id %}" class="btn btn-danger btn-sm btn-icon" title="Hapus" id="del_product_{{ p.id }}"><i class="fas fa-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">📦</div><p>Belum ada produk. <a href="{% url 'product_create' %}" style="color:var(--caramel);">Tambah sekarang</a></p></div>
+  {% endif %}
+</div>
+{% endblock %}

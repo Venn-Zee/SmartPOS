@@ -1,0 +1,74 @@
+{% extends 'pos/base.html' %}
+{% block title %}Laporan Pelanggan{% endblock %}
+{% block page_title %}Laporan Pelanggan{% endblock %}
+
+{% block content %}
+<div class="report-summary" style="margin-bottom:24px;">
+  <div class="stat-card coffee">
+    <div class="stat-icon">👥</div>
+    <div class="stat-value" style="font-size:22px;">{{ report.total_customers }}</div>
+    <div class="stat-label">Total Pelanggan</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-icon">🆕</div>
+    <div class="stat-value" style="font-size:22px;">{{ report.new_customers }}</div>
+    <div class="stat-label">Pelanggan Baru</div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-header"><span class="card-title">🏆 Top 10 Pelanggan (Berdasar Pengeluaran)</span></div>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Transaksi</th><th>Total Belanja</th><th>Poin</th></tr></thead>
+      <tbody>
+        {% for c in report.top_customers %}
+        <tr>
+          <td>
+            {% if forloop.counter == 1 %}<span style="font-size:18px;">🥇</span>
+            {% elif forloop.counter == 2 %}<span style="font-size:18px;">🥈</span>
+            {% elif forloop.counter == 3 %}<span style="font-size:18px;">🥉</span>
+            {% else %}<span style="color:var(--text-muted);">{{ forloop.counter }}</span>{% endif %}
+          </td>
+          <td style="font-weight:600;">{{ c.name }}</td>
+          <td style="color:var(--text-secondary);">{{ c.email }}</td>
+          <td><span class="badge badge-coffee">{{ c.transaction_count }}</span></td>
+          <td style="color:var(--caramel);font-weight:600;">Rp {{ c.total_spent|floatformat:0 }}</td>
+          <td><span class="badge badge-gold">⭐ {{ c.loyalty_points }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Belum ada data transaksi pelanggan.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span class="card-title">📋 Semua Pelanggan (Diurutkan Poin)</span></div>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Telepon</th><th>Poin</th><th>Tier</th><th>Bergabung</th></tr></thead>
+      <tbody>
+        {% for c in report.customers %}
+        <tr>
+          <td style="color:var(--text-muted);">{{ forloop.counter }}</td>
+          <td style="font-weight:600;">{{ c.name }}</td>
+          <td style="color:var(--text-secondary);">{{ c.email }}</td>
+          <td>{{ c.phone }}</td>
+          <td style="color:var(--caramel);font-weight:600;">{{ c.loyalty_points }}</td>
+          <td>
+            {% with tier=c.get_tier %}
+              {% if tier == 'Gold' %}<span class="badge badge-gold">⭐ Gold</span>
+              {% elif tier == 'Silver' %}<span class="badge badge-silver">🥈 Silver</span>
+              {% else %}<span class="badge badge-bronze">🥉 Bronze</span>{% endif %}
+            {% endwith %}
+          </td>
+          <td style="color:var(--text-muted);font-size:12px;">{{ c.created_at|date:"d M Y" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
