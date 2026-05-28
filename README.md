@@ -15,5 +15,5 @@ run with
 venv\Scripts\activate
 
 python manage.py runserver
--
+
 if venv folder is one tier above the project file, then cd first
